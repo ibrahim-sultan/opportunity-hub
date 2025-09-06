@@ -36,20 +36,51 @@ const Login = () => {
         <div className="auth-content">
           <div className="auth-welcome">
             <div className="welcome-content">
+              <div className="welcome-badge">
+                <span className="badge-icon">✨</span>
+                <span>Trusted by 500+ Youth</span>
+              </div>
               <h1>Welcome Back!</h1>
               <p>Sign in to continue your journey with OpportunityHub and discover amazing opportunities in Igbaja.</p>
               <div className="welcome-features">
                 <div className="feature-item">
-                  <span className="feature-icon">🎯</span>
-                  <span>Find Perfect Matches</span>
+                  <div className="feature-icon-wrapper">
+                    <span className="feature-icon">🎯</span>
+                  </div>
+                  <div className="feature-content">
+                    <span className="feature-title">Find Perfect Matches</span>
+                    <span className="feature-desc">AI-powered opportunity matching</span>
+                  </div>
                 </div>
                 <div className="feature-item">
-                  <span className="feature-icon">📈</span>
-                  <span>Track Your Progress</span>
+                  <div className="feature-icon-wrapper">
+                    <span className="feature-icon">📈</span>
+                  </div>
+                  <div className="feature-content">
+                    <span className="feature-title">Track Your Progress</span>
+                    <span className="feature-desc">Real-time application updates</span>
+                  </div>
                 </div>
                 <div className="feature-item">
-                  <span className="feature-icon">🏆</span>
-                  <span>Earn Certificates</span>
+                  <div className="feature-icon-wrapper">
+                    <span className="feature-icon">🏆</span>
+                  </div>
+                  <div className="feature-content">
+                    <span className="feature-title">Earn Certificates</span>
+                    <span className="feature-desc">Verified digital certificates</span>
+                  </div>
+                </div>
+              </div>
+              <div className="welcome-testimonial">
+                <div className="testimonial-content">
+                  <p>"OpportunityHub changed my life! Found my dream internship in just 2 weeks."</p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">👩‍🎓</div>
+                    <div className="author-info">
+                      <span className="author-name">Fatima A.</span>
+                      <span className="author-role">Software Developer</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

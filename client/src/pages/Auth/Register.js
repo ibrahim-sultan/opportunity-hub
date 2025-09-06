@@ -82,31 +82,56 @@ const Register = () => {
         <div className="auth-content">
           <div className="auth-welcome">
             <div className="welcome-content">
+              <div className="welcome-badge">
+                <span className="badge-icon">🚀</span>
+                <span>Join 500+ Success Stories</span>
+              </div>
               <h1>Join OpportunityHub!</h1>
               <p>Create your account and start your journey towards meaningful opportunities in Igbaja.</p>
               <div className="welcome-stats">
                 <div className="stat-item">
+                  <div className="stat-icon">👥</div>
                   <div className="stat-number">500+</div>
                   <div className="stat-label">Youth Empowered</div>
                 </div>
                 <div className="stat-item">
+                  <div className="stat-icon">🌟</div>
                   <div className="stat-number">200+</div>
                   <div className="stat-label">Opportunities</div>
                 </div>
                 <div className="stat-item">
+                  <div className="stat-icon">🏅</div>
                   <div className="stat-number">95%</div>
                   <div className="stat-label">Success Rate</div>
                 </div>
               </div>
               <div className="welcome-benefits">
                 <div className="benefit-item">
-                  <span>✨</span> Free to join and use
+                  <div className="benefit-icon">✨</div> 
+                  <div className="benefit-text">
+                    <span className="benefit-title">Free to Join</span>
+                    <span className="benefit-desc">No hidden fees, ever</span>
+                  </div>
                 </div>
                 <div className="benefit-item">
-                  <span>🎯</span> Personalized matching
+                  <div className="benefit-icon">🎯</div>
+                  <div className="benefit-text">
+                    <span className="benefit-title">Smart Matching</span>
+                    <span className="benefit-desc">AI finds your perfect fit</span>
+                  </div>
                 </div>
                 <div className="benefit-item">
-                  <span>🏆</span> Earn certificates
+                  <div className="benefit-icon">🏆</div>
+                  <div className="benefit-text">
+                    <span className="benefit-title">Get Certified</span>
+                    <span className="benefit-desc">Boost your career profile</span>
+                  </div>
+                </div>
+              </div>
+              <div className="welcome-cta">
+                <div className="cta-text">
+                  <span className="cta-highlight">Limited Time:</span> 
+                  <span>Get premium features free for 3 months!</span>
                 </div>
               </div>
             </div>
