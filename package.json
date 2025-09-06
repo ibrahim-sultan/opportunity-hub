@@ -1,0 +1,43 @@
+{
+  "name": "internship-volunteer-platform",
+  "version": "1.0.0",
+  "description": "A platform connecting rural youth with internship and volunteer opportunities",
+  "main": "server/server.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "install-server": "cd server && npm install",
+    "install-client": "cd client && npm install", 
+    "install-all": "npm run install-server && npm run install-client",
+    "start": "cd server && npm start",
+    "heroku-postbuild": "npm run install-all && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ibrahim-sultan/team-a-platform.git"
+  },
+  "keywords": [
+    "internship",
+    "volunteer",
+    "platform",
+    "rural",
+    "youth",
+    "nigeria",
+    "igbaja"
+  ],
+  "author": "Village Coders of Igbaja",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ibrahim-sultan/team-a-platform/issues"
+  },
+  "homepage": "https://github.com/ibrahim-sultan/team-a-platform#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

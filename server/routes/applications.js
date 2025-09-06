@@ -6,7 +6,7 @@ const { auth } = require('../middleware/auth');
 // Get user's applications
 router.get('/', auth, async (req, res) => {
   try {
-    const applications = await Application.find({ user: req.user.id })
+    const applications = await Application.find({ applicant: req.user.id })
       .populate('opportunity', 'title company location')
       .sort({ createdAt: -1 });
     
@@ -21,7 +21,7 @@ router.get('/', auth, async (req, res) => {
 router.post('/', auth, async (req, res) => {
   try {
     const newApplication = new Application({
-      user: req.user.id,
+      applicant: req.user.id,
       opportunity: req.body.opportunityId,
       coverLetter: req.body.coverLetter,
       status: 'pending'

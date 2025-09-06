@@ -1,0 +1,43 @@
+services:
+  # Backend API Service
+  - type: web
+    name: internship-platform-api
+    runtime: node
+    plan: free
+    buildCommand: |
+      cd server
+      npm install
+    startCommand: |
+      cd server
+      npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false  # Set this in Render dashboard
+      - key: JWT_SECRET
+        sync: false  # Set this in Render dashboard
+      - key: CLIENT_URL
+        sync: false  # Set this in Render dashboard
+
+  # Frontend Static Site
+  - type: web
+    name: internship-platform-frontend
+    runtime: static
+    plan: free
+    buildCommand: |
+      cd client
+      npm install
+      npm run build
+    staticPublishPath: ./client/build
+    envVars:
+      - key: REACT_APP_API_URL
+        sync: false  # Set to your backend URL in Render dashboard
+
+# Database (if using Render PostgreSQL - optional)
+# databases:
+#   - name: internship-platform-db
+#     plan: free

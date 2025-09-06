@@ -6,9 +6,9 @@ const { auth } = require('../middleware/auth');
 // Get user's certificates
 router.get('/', auth, async (req, res) => {
   try {
-    const certificates = await Certificate.find({ user: req.user.id })
+    const certificates = await Certificate.find({ recipient: req.user.id })
       .populate('opportunity', 'title company')
-      .sort({ issuedDate: -1 });
+      .sort({ createdAt: -1 });
     
     res.json(certificates);
   } catch (error) {
@@ -21,11 +21,11 @@ router.get('/', auth, async (req, res) => {
 router.post('/generate', auth, async (req, res) => {
   try {
     const newCertificate = new Certificate({
-      user: req.user.id,
+      recipient: req.user.id,
       opportunity: req.body.opportunityId,
-      certificateNumber: `CERT-${Date.now()}`,
-      issuedDate: new Date(),
-      skills: req.body.skills || []
+      certificateId: `CERT-${Date.now()}`,
+      completionDate: new Date(),
+      skillsGained: req.body.skills || []
     });
 
     const certificate = await newCertificate.save();
@@ -42,7 +42,7 @@ router.post('/generate', auth, async (req, res) => {
 router.get('/:id/download', auth, async (req, res) => {
   try {
     const certificate = await Certificate.findById(req.params.id)
-      .populate('user', 'firstName lastName')
+      .populate('recipient', 'firstName lastName')
       .populate('opportunity', 'title company');
     
     if (!certificate) {

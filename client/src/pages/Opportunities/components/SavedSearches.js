@@ -1,81 +1,109 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import { useAuth } from '../../../contexts/AuthContext';
+import React from 'react';
 import './SavedSearches.css';
 
-const SavedSearches = ({ onApplySearch }) => {
-  const [savedSearches, setSavedSearches] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { user } = useAuth();
-
-  const fetchSavedSearches = useCallback(async () => {
+const SavedSearches = ({ 
+  savedSearches, 
+  onApplySearch, 
+  onDeleteSearch, 
+  onClose 
+}) => {
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete "${name}"?`)) return;
+    
     try {
-      const response = await axios.get('/api/search/saved', {
-        headers: { Authorization: `Bearer ${user.token}` }
-      });
-      setSavedSearches(response.data);
-    } catch (err) {
-      setError('Failed to load saved searches');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [user.token]);
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this saved search?')) return;
-
-    try {
-      await axios.delete(`/api/search/saved/${id}`, {
-        headers: { Authorization: `Bearer ${user.token}` }
-      });
-      setSavedSearches(prev => prev.filter(search => search._id !== id));
-    } catch (err) {
-      alert('Failed to delete saved search');
+      await onDeleteSearch(id);
+    } catch (error) {
+      console.error('Failed to delete saved search:', error);
     }
   };
 
-  const handleApply = (search) => {
-    onApplySearch(search.filters);
+  const formatFilters = (filters) => {
+    const activeFilters = [];
+    
+    if (filters.search) activeFilters.push(`"${filters.search}"`);
+    if (filters.type) activeFilters.push(`Type: ${filters.type}`);
+    if (filters.category) activeFilters.push(`Category: ${filters.category}`);
+    if (filters.state) activeFilters.push(`State: ${filters.state}`);
+    if (filters.lga) activeFilters.push(`LGA: ${filters.lga}`);
+    if (filters.remote) activeFilters.push('Remote only');
+    if (filters.minStipend) activeFilters.push(`Min: ₦${filters.minStipend}`);
+    if (filters.maxStipend) activeFilters.push(`Max: ₦${filters.maxStipend}`);
+    if (filters.education) activeFilters.push(`Education: ${filters.education}`);
+    if (filters.experience) activeFilters.push(`Experience: ${filters.experience}`);
+    if (filters.skills && filters.skills.length > 0) {
+      activeFilters.push(`Skills: ${filters.skills.join(', ')}`);
+    }
+    
+    return activeFilters.length > 0 ? activeFilters.join(' • ') : 'No filters applied';
   };
-
-  if (loading) return <div className="loading">Loading saved searches...</div>;
-  if (error) return <div className="error">{error}</div>;
 
   return (
-    <div className="saved-searches">
-      <h3>Saved Searches</h3>
-      {savedSearches.length === 0 ? (
-        <p className="no-searches">No saved searches yet</p>
-      ) : (
-        <div className="searches-list">
-          {savedSearches.map(search => (
-            <div key={search._id} className="search-item">
-              <div className="search-info">
-                <h4>{search.name}</h4>
-                <p className="search-date">
-                  Saved on {new Date(search.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-              <div className="search-actions">
-                <button 
-                  className="apply-btn"
-                  onClick={() => handleApply(search)}
-                >
-                  Apply
-                </button>
-                <button 
-                  className="delete-btn"
-                  onClick={() => handleDelete(search._id)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+    <div className="saved-searches-overlay">
+      <div className="saved-searches-modal">
+        <div className="saved-searches-header">
+          <h3>Saved Searches</h3>
+          <button onClick={onClose} className="close-btn">✕</button>
         </div>
-      )}
+        
+        <div className="saved-searches-content">
+          {savedSearches.length === 0 ? (
+            <div className="no-searches">
+              <div className="no-searches-icon">📋</div>
+              <h4>No saved searches yet</h4>
+              <p>Save your search criteria to quickly access them later</p>
+            </div>
+          ) : (
+            <div className="searches-list">
+              {savedSearches.map(search => (
+                <div key={search._id} className="search-item">
+                  <div className="search-info">
+                    <h4 className="search-name">{search.name}</h4>
+                    <p className="search-filters">
+                      {formatFilters(search.filters)}
+                    </p>
+                    <div className="search-meta">
+                      <span className="search-date">
+                        📅 Saved on {new Date(search.createdAt).toLocaleDateString()}
+                      </span>
+                      {search.lastUsed && (
+                        <span className="last-used">
+                          🕒 Last used {new Date(search.lastUsed).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="search-actions">
+                    <button
+                      className="apply-btn"
+                      onClick={() => {
+                        onApplySearch(search);
+                        onClose();
+                      }}
+                      title="Apply this search"
+                    >
+                      🔍 Apply
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(search._id, search.name)}
+                      title="Delete this search"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        <div className="saved-searches-footer">
+          <p className="tip">
+            💡 Tip: Use the "Save" button in the search filters to save your current search
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

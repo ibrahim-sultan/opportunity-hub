@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const searchService = require('../services/searchService');
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 
 // GET /api/search/opportunities
 router.get('/opportunities', async (req, res) => {
