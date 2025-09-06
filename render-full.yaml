@@ -1,0 +1,43 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: opportunity-hub-backend
+    runtime: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+
+  # Combined Web Service (serves both API and static files)
+  - type: web
+    name: opportunity-hub-fullstack
+    runtime: node
+    plan: free
+    buildCommand: |
+      npm install
+      cd server && npm install
+      cd ../client && npm install && npm run build
+    startCommand: cd server && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CLIENT_URL
+        value: $RENDER_EXTERNAL_URL
