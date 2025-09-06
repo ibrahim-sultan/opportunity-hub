@@ -73,20 +73,48 @@ const useSearch = () => {
       params.append('page', resetPage ? '1' : searchParams.page.toString());
       params.append('limit', searchParams.limit.toString());
 
-      const response = await axios.get(`/api/search/opportunities?${params.toString()}`);
+      // Try search API first, fallback to opportunities API
+      let response;
+      try {
+        response = await axios.get(`/api/search/opportunities?${params.toString()}`);
+      } catch (searchError) {
+        console.warn('Search API failed, trying opportunities API:', searchError);
+        response = await axios.get(`/api/opportunities?${params.toString()}`);
+      }
+      
+      // Ensure response has expected structure
+      const data = response.data || {};
+      const opportunities = data.opportunities || [];
+      const pagination = data.pagination || {
+        page: 1,
+        limit: 20,
+        total: opportunities.length,
+        pages: 1
+      };
+      
+      const formattedResponse = {
+        opportunities,
+        pagination
+      };
       
       if (resetPage || searchParams.page === 1) {
-        setResults(response.data);
+        setResults(formattedResponse);
       } else {
         // Append results for pagination
         setResults(prev => ({
-          ...response.data,
-          opportunities: [...prev.opportunities, ...response.data.opportunities]
+          ...formattedResponse,
+          opportunities: [...prev.opportunities, ...opportunities]
         }));
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Search failed');
       console.error('Search error:', err);
+      setError('Unable to load opportunities. Please try again.');
+      
+      // Set fallback data instead of leaving empty
+      setResults({
+        opportunities: [],
+        pagination: { page: 1, limit: 20, total: 0, pages: 0 }
+      });
     } finally {
       setLoading(false);
     }

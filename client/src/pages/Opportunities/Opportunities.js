@@ -1,10 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import useSearch from '../../hooks/useSearch';
 import AdvancedSearch from '../../components/AdvancedSearch/AdvancedSearch';
 import Pagination from '../../components/Pagination/Pagination';
 import SavedSearches from './components/SavedSearches';
 import './Opportunities.css';
+
+// Sample opportunities for fallback
+const sampleOpportunities = [
+  {
+    _id: 'sample-1',
+    title: 'Web Development Internship',
+    type: 'internship',
+    category: 'technology',
+    organization: { name: 'Tech Startup Lagos' },
+    description: 'Learn modern web development with React, Node.js, and MongoDB. Work with a dynamic team on real projects.',
+    location: { state: 'Lagos', lga: 'Victoria Island', isRemote: false },
+    duration: '3 months',
+    benefits: { stipend: { amount: 50000 } },
+    applicationDeadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    views: 234
+  },
+  {
+    _id: 'sample-2',
+    title: 'Community Health Volunteer',
+    type: 'volunteer',
+    category: 'health',
+    organization: { name: 'Rural Health Initiative' },
+    description: 'Help improve healthcare access in rural communities. Assist with health education and basic medical screening.',
+    location: { state: 'Kwara', lga: 'Ifelodun', isRemote: false },
+    duration: '6 months',
+    benefits: { stipend: { amount: 0 } },
+    applicationDeadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    views: 156
+  },
+  {
+    _id: 'sample-3',
+    title: 'Digital Marketing Internship',
+    type: 'internship',
+    category: 'business',
+    organization: { name: 'Marketing Pro Agency' },
+    description: 'Gain hands-on experience in digital marketing, social media management, and content creation.',
+    location: { isRemote: true },
+    duration: '4 months',
+    benefits: { stipend: { amount: 75000 } },
+    applicationDeadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+    views: 189
+  }
+];
 
 const Opportunities = () => {
   const [showSavedSearches, setShowSavedSearches] = useState(false);
@@ -29,6 +75,27 @@ const Opportunities = () => {
     hasMore,
     totalResults
   } = useSearch();
+
+  // Use sample data when there's an error or no opportunities
+  const displayData = useMemo(() => {
+    const hasRealData = results.opportunities && results.opportunities.length > 0;
+    const hasError = error && !loading;
+    
+    if (hasRealData || loading) {
+      return {
+        opportunities: results.opportunities || [],
+        totalResults: totalResults,
+        showSampleBanner: false
+      };
+    }
+    
+    // Show sample data when there's an error or no data
+    return {
+      opportunities: sampleOpportunities,
+      totalResults: sampleOpportunities.length,
+      showSampleBanner: true
+    };
+  }, [results.opportunities, totalResults, error, loading]);
 
   const handleSaveSearch = async (name) => {
     try {
@@ -132,11 +199,19 @@ const Opportunities = () => {
       {/* Error Message */}
       {error && (
         <div className="error-message">
-          <span className="error-icon">⚠️</span>
-          {error}
-          <button onClick={() => window.location.reload()} className="retry-btn">
-            Retry
-          </button>
+          <div className="error-content">
+            <span className="error-icon">🔍</span>
+            <h3>Having trouble loading opportunities</h3>
+            <p>{error}</p>
+            <div className="error-actions">
+              <button onClick={resetSearch} className="retry-btn primary">
+                Try Again
+              </button>
+              <button onClick={() => window.location.reload()} className="retry-btn secondary">
+                Refresh Page
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -151,12 +226,31 @@ const Opportunities = () => {
       {/* Results */}
       {!loading || results.opportunities.length > 0 ? (
         <>
+          {/* Sample Data Banner */}
+          {displayData.showSampleBanner && (
+            <div className="sample-data-banner">
+              <div className="banner-content">
+                <span className="banner-icon">ℹ️</span>
+                <div className="banner-text">
+                  <strong>Sample Opportunities</strong>
+                  <p>Showing sample opportunities as the API is not currently available. These are examples of what you might find on our platform.</p>
+                </div>
+                <button onClick={resetSearch} className="banner-action">
+                  Try Again
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Results Summary */}
           <div className="results-summary">
             <div className="results-count">
-              <strong>{totalResults.toLocaleString()}</strong> opportunities found
+              <strong>{displayData.totalResults.toLocaleString()}</strong> opportunities found
               {searchState.query && (
                 <span className="search-query">for "{searchState.query}"</span>
+              )}
+              {displayData.showSampleBanner && (
+                <span className="sample-label">(Sample Data)</span>
               )}
             </div>
             
@@ -187,8 +281,8 @@ const Opportunities = () => {
 
           {/* Opportunities Grid */}
           <div className="opportunities-grid">
-            {results.opportunities.length > 0 ? (
-              results.opportunities.map((opportunity) => (
+            {displayData.opportunities.length > 0 ? (
+              displayData.opportunities.map((opportunity) => (
                 <div key={opportunity._id} className="opportunity-card">
                   <div className="opportunity-header">
                     <span 
